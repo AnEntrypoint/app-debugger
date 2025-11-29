@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filesystem Debugger</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .debugger-header {
+      background: #2a2a2a;
+      padding: 15px;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .debugger-title {
+      font-weight: bold;
+      color: #4ade80;
+      font-size: 16px;
+    }
+    .debugger-controls button {
+      background: #3a3a3a;
+      border: none;
+      color: #e0e0e0;
+      padding: 8px 16px;
+      margin-left: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .debugger-controls button:hover {
+      background: #4a4a4a;
+    }
+    .debugger-main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 300px;
+      background: #242424;
+      border-right: 1px solid #3a3a3a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-section {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .sidebar-section h3 {
+      color: #4ade80;
+      margin-bottom: 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .layer-item {
+      background: #2a2a2a;
+      padding: 10px 12px;
+      margin: 6px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .layer-item:hover {
+      background: #333;
+      border-left-color: #4ade80;
+    }
+    .layer-item.active {
+      background: #3a3a3a;
+      border-left-color: #4ade80;
+    }
+    .layer-hash {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #64b5f6;
+      margin-bottom: 4px;
+    }
+    .layer-timestamp {
+      font-size: 11px;
+      color: #999;
+    }
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .status-card {
+      background: #242424;
+      padding: 18px;
+      border-radius: 10px;
+      border-left: 4px solid #4ade80;
+    }
+    .status-card.warning {
+      border-left-color: #ffbd2e;
+    }
+    .status-card.error {
+      border-left-color: #ff5f56;
+    }
+    .status-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .status-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4ade80;
+    }
+    .file-list {
+      background: #242424;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .file-list h3 {
+      color: #4ade80;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .file-item {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 8px 10px;
+      margin: 4px 0;
+      background: #2a2a2a;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .file-item.added {
+      border-left: 3px solid #4ade80;
+    }
+    .file-item.modified {
+      border-left: 3px solid #ffbd2e;
+    }
+    .file-item.deleted {
+      border-left: 3px solid #ff5f56;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    .file-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .file-badge.added {
+      background: rgba(74, 222, 128, 0.2);
+      color: #4ade80;
+    }
+    .file-badge.modified {
+      background: rgba(255, 189, 46, 0.2);
+      color: #ffbd2e;
+    }
+    .file-badge.deleted {
+      background: rgba(255, 95, 86, 0.2);
+      color: #ff5f56;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+    .empty-state h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .sidebar-section::-webkit-scrollbar,
+    .content-area::-webkit-scrollbar {
+      width: 8px;
+    }
+    .sidebar-section::-webkit-scrollbar-track,
+    .content-area::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+    .sidebar-section::-webkit-scrollbar-thumb,
+    .content-area::-webkit-scrollbar-thumb {
+      background: #3a3a3a;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="debugger-header">
+    <div class="debugger-title">🔍 Filesystem Debugger</div>
+    <div class="debugger-controls">
+      <button onclick="refreshData()">Refresh</button>
+      <button onclick="showTags()">Tags</button>
+    </div>
+  </div>
+  <div class="debugger-main">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <h3>Layer History</h3>
+        <div id="layers"></div>
+      </div>
+    </div>
+    <div class="content-area" id="content">
+      <div class="empty-state">
+        <h3>Select a layer to view details</h3>
+        <p>or view current status below</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLayers = [];
+    let selectedLayer = null;
+
+    async function refreshData() {
+      await Promise.all([loadLayers(), loadStatus()]);
+    }
+
+    async function loadLayers() {
+      try {
+        const res = await fetch('/api/sequential-os/history');
+        const layers = await res.json();
+        currentLayers = layers;
+        renderLayers(layers);
+      } catch (error) {
+        console.error('Failed to load layers:', error);
+      }
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await fetch('/api/sequential-os/status');
+        const status = await res.json();
+        renderStatus(status);
+      } catch (error) {
+        console.error('Failed to load status:', error);
+      }
+    }
+
+    function renderLayers(layers) {
+      const container = document.getElementById('layers');
+      if (layers.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No layers yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = layers.map((layer, idx) => `
+        <div class="layer-item ${selectedLayer === idx ? 'active' : ''}" onclick="selectLayer(${idx})">
+          <div class="layer-hash">${layer.short}</div>
+          <div class="layer-timestamp">${new Date(layer.timestamp).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderStatus(status) {
+      const content = document.getElementById('content');
+      const added = status.added || [];
+      const modified = status.modified || [];
+      const deleted = status.deleted || [];
+      const total = added.length + modified.length + deleted.length;
+
+      content.innerHTML = `
+        <h2 style="margin-bottom: 20px; color: #4ade80;">Current Status</h2>
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Total Changes</div>
+            <div class="status-value">${total}</div>
+          </div>
+          <div class="status-card ${added.length > 0 ? '' : 'warning'}">
+            <div class="status-label">Added Files</div>
+            <div class="status-value">${added.length}</div>
+          </div>
+          <div class="status-card ${modified.length > 0 ? 'warning' : ''}">
+            <div class="status-label">Modified Files</div>
+            <div class="status-value">${modified.length}</div>
+          </div>
+          <div class="status-card ${deleted.length > 0 ? 'error' : ''}">
+            <div class="status-label">Deleted Files</div>
+            <div class="status-value">${deleted.length}</div>
+          </div>
+        </div>
+        ${added.length > 0 ? `
+          <div class="file-list">
+            <h3>Added Files</h3>
+            ${added.map(f => `
+              <div class="file-item added">
+                <span>${f}</span>
+                <span class="file-badge added">Added</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${modified.length > 0 ? `
+          <div class="file-list">
+            <h3>Modified Files</h3>
+            ${modified.map(f => `
+              <div class="file-item modified">
+                <span>${f}</span>
+                <span class="file-badge modified">Modified</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${deleted.length > 0 ? `
+          <div class="file-list">
+            <h3>Deleted Files</h3>
+            ${deleted.map(f => `
+              <div class="file-item deleted">
+                <span>${f}</span>
+                <span class="file-badge deleted">Deleted</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${total === 0 ? '<div class="empty-state"><h3>✓ Working directory clean</h3><p>No uncommitted changes</p></div>' : ''}
+      `;
+    }
+
+    async function selectLayer(idx) {
+      selectedLayer = idx;
+      renderLayers(currentLayers);
+      const layer = currentLayers[idx];
+
+      try {
+        const res = await fetch(`/api/sequential-os/inspect/${layer.hash}`);
+        const info = await res.json();
+
+        const content = document.getElementById('content');
+        content.innerHTML = `
+          <h2 style="margin-bottom: 20px; color: #4ade80;">Layer Details</h2>
+          <div class="status-grid">
+            <div class="status-card">
+              <div class="status-label">Hash</div>
+              <div class="status-value" style="font-size: 14px; font-family: 'Courier New', monospace;">${layer.hash}</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Short Hash</div>
+              <div class="status-value" style="font-size: 18px;">${layer.short}</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Timestamp</div>
+              <div class="status-value" style="font-size: 16px;">${new Date(layer.timestamp).toLocaleString()}</div>
+            </div>
+            <div class="status-card">
+              <div class="status-label">Size</div>
+              <div class="status-value">${(info.size / 1024).toFixed(2)} KB</div>
+            </div>
+          </div>
+          ${info.files && info.files.length > 0 ? `
+            <div class="file-list">
+              <h3>Files in this Layer (${info.files.length})</h3>
+              ${info.files.map(f => `
+                <div class="file-item">
+                  <span>${f}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<div class="empty-state"><p>No files in this layer</p></div>'}
+        `;
+      } catch (error) {
+        console.error('Failed to inspect layer:', error);
+      }
+    }
+
+    async function showTags() {
+      try {
+        const res = await fetch('/api/sequential-os/tags');
+        const tags = await res.json();
+        const content = document.getElementById('content');
+
+        const tagEntries = Object.entries(tags);
+        content.innerHTML = `
+          <h2 style="margin-bottom: 20px; color: #4ade80;">Tags</h2>
+          ${tagEntries.length > 0 ? `
+            <div class="file-list">
+              ${tagEntries.map(([name, ref]) => `
+                <div class="file-item">
+                  <span style="font-weight: bold; color: #4ade80;">${name}</span>
+                  <span style="font-family: 'Courier New', monospace; font-size: 12px; color: #64b5f6;">${ref}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<div class="empty-state"><h3>No tags yet</h3><p>Create tags to bookmark important states</p></div>'}
+        `;
+      } catch (error) {
+        console.error('Failed to load tags:', error);
+      }
+    }
+
+    refreshData();
+    setInterval(refreshData, 5000);
+  </script>
+</body>
+</html>
