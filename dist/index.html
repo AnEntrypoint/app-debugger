@@ -203,12 +203,227 @@
       background: #3a3a3a;
       border-radius: 4px;
     }
+    .layer-checkout-btn {
+      background: #4ade80;
+      color: #1a1a1a;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .layer-checkout-btn:hover {
+      background: #22c55e;
+    }
+    .layer-checkout-btn:active {
+      background: #16a34a;
+    }
+    .layer-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .layer-controls button {
+      flex: 1;
+      background: #3a3a3a;
+      border: none;
+      color: #e0e0e0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .layer-controls button:hover {
+      background: #4a4a4a;
+    }
+    .compare-btn {
+      background: #64b5f6 !important;
+      color: #1a1a1a !important;
+    }
+    .compare-btn:hover {
+      background: #42a5f5 !important;
+    }
+    .layer-item.selected-compare {
+      border-left-color: #64b5f6;
+      background: #3a4a5a;
+    }
+    .diff-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .diff-modal.active {
+      display: flex;
+    }
+    .diff-container {
+      background: #1e1e1e;
+      margin: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 40px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .diff-header {
+      padding: 20px;
+      border-bottom: 1px solid #3a3a3a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .diff-header h3 {
+      color: #e0e0e0;
+      font-size: 16px;
+      margin: 0;
+    }
+    .diff-close-btn {
+      background: #3a3a3a;
+      border: none;
+      color: #e0e0e0;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .diff-close-btn:hover {
+      background: #4a4a4a;
+    }
+    .diff-content {
+      flex: 1;
+      overflow: auto;
+      padding: 20px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .diff-file-header {
+      color: #64b5f6;
+      font-weight: bold;
+      padding: 10px 0;
+      margin-top: 15px;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .diff-file-header:first-child {
+      margin-top: 0;
+    }
+    .diff-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .diff-side {
+      background: #252525;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .diff-side-label {
+      background: #2a2a2a;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #3a3a3a;
+    }
+    .diff-lines {
+      padding: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .diff-line {
+      display: flex;
+      padding: 2px 4px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .diff-line-added {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+    .diff-line-removed {
+      background: rgba(255, 95, 86, 0.15);
+      color: #ff5f56;
+    }
+    .diff-line-unchanged {
+      color: #b0b0b0;
+    }
+    .diff-summary {
+      background: #242424;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .diff-stat {
+      display: inline-block;
+      margin-right: 20px;
+      font-size: 13px;
+    }
+    .diff-stat-added {
+      color: #4ade80;
+    }
+    .diff-stat-modified {
+      color: #ffbd2e;
+    }
+    .diff-stat-deleted {
+      color: #ff5f56;
+    }
+    .debug-log {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #242424;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      max-width: 400px;
+      z-index: 9999;
+      animation: slideIn 0.3s;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .debug-log.success {
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+    .debug-log.error {
+      border-color: #ff5f56;
+      color: #ff5f56;
+    }
+    .debug-log.info {
+      border-color: #64b5f6;
+      color: #64b5f6;
+    }
+    .compare-mode-active {
+      background: #3a4a5a;
+      border: 1px dashed #64b5f6;
+    }
   </style>
 </head>
 <body>
   <div class="debugger-header">
     <div class="debugger-title">🔍 Filesystem Debugger</div>
     <div class="debugger-controls">
+      <button id="compareBtn" onclick="toggleCompareMode()">Compare Layers</button>
       <button onclick="refreshData()">Refresh</button>
       <button onclick="showTags()">Tags</button>
     </div>
@@ -228,9 +443,50 @@
     </div>
   </div>
 
+  <div id="diffModal" class="diff-modal">
+    <div class="diff-container">
+      <div class="diff-header">
+        <h3 id="diffTitle">File Diff Viewer</h3>
+        <button class="diff-close-btn" onclick="closeDiffModal()">Close</button>
+      </div>
+      <div class="diff-content" id="diffContent"></div>
+    </div>
+  </div>
+
   <script>
     let currentLayers = [];
     let selectedLayer = null;
+    let comparisonMode = false;
+    let selectedLayers = [];
+
+    function addDebugLog(message, type = 'info') {
+      const log = document.createElement('div');
+      log.className = `debug-log ${type}`;
+      log.textContent = message;
+      document.body.appendChild(log);
+      setTimeout(() => {
+        log.style.opacity = '0';
+        log.style.transition = 'opacity 0.3s';
+        setTimeout(() => log.remove(), 300);
+      }, 3000);
+    }
+
+    function toggleCompareMode() {
+      comparisonMode = !comparisonMode;
+      selectedLayers = [];
+      selectedLayer = null;
+      const btn = document.getElementById('compareBtn');
+      if (comparisonMode) {
+        btn.style.background = '#64b5f6';
+        btn.style.color = '#1a1a1a';
+        addDebugLog('Compare mode enabled. Select two layers to compare.', 'info');
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+        addDebugLog('Compare mode disabled.', 'info');
+      }
+      renderLayers(currentLayers);
+    }
 
     async function refreshData() {
       await Promise.all([loadLayers(), loadStatus()]);
@@ -244,6 +500,7 @@
         renderLayers(layers);
       } catch (error) {
         console.error('Failed to load layers:', error);
+        addDebugLog('Failed to load layers', 'error');
       }
     }
 
@@ -265,11 +522,54 @@
       }
 
       container.innerHTML = layers.map((layer, idx) => `
-        <div class="layer-item ${selectedLayer === idx ? 'active' : ''}" onclick="selectLayer(${idx})">
+        <div class="layer-item ${selectedLayer === idx ? 'active' : ''} ${selectedLayers.includes(idx) ? 'selected-compare' : ''}" onclick="selectLayer(${idx})">
           <div class="layer-hash">${layer.short}</div>
-          <div class="layer-timestamp">${new Date(layer.timestamp).toLocaleString()}</div>
+          <div class="layer-timestamp">${new Date(layer.time).toLocaleString()}</div>
+          ${!comparisonMode ? `
+            <button class="layer-checkout-btn" onclick="event.stopPropagation(); checkoutLayer('${layer.hash}')">
+              Checkout
+            </button>
+          ` : ''}
+          ${!comparisonMode && selectedLayers.length < 2 ? `
+            <div class="layer-controls">
+              ${currentLayers.length > 1 ? `<button onclick="event.stopPropagation(); compareWithNext('${idx}')" class="compare-btn">Compare</button>` : ''}
+            </div>
+          ` : ''}
         </div>
       `).join('');
+    }
+
+    async function checkoutLayer(hash) {
+      try {
+        addDebugLog('Checking out layer...', 'info');
+        const res = await fetch('/api/sequential-os/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref: hash })
+        });
+        const result = await res.json();
+        if (result.success || result.ref) {
+          addDebugLog(`Checked out layer ${hash.substring(0, 8)}`, 'success');
+          await Promise.all([loadLayers(), loadStatus()]);
+        } else {
+          addDebugLog(`Checkout failed: ${result.error || 'Unknown error'}`, 'error');
+        }
+      } catch (error) {
+        addDebugLog(`Checkout error: ${error.message}`, 'error');
+      }
+    }
+
+    function compareWithNext(idxStr) {
+      const idx = parseInt(idxStr);
+      if (selectedLayers.includes(idx)) {
+        selectedLayers = selectedLayers.filter(i => i !== idx);
+      } else if (selectedLayers.length < 2) {
+        selectedLayers.push(idx);
+      }
+      if (selectedLayers.length === 2) {
+        showLayerComparison(selectedLayers[0], selectedLayers[1]);
+      }
+      renderLayers(currentLayers);
     }
 
     function renderStatus(status) {
@@ -337,48 +637,60 @@
     }
 
     async function selectLayer(idx) {
-      selectedLayer = idx;
-      renderLayers(currentLayers);
-      const layer = currentLayers[idx];
+      if (comparisonMode) {
+        if (selectedLayers.includes(idx)) {
+          selectedLayers = selectedLayers.filter(i => i !== idx);
+        } else if (selectedLayers.length < 2) {
+          selectedLayers.push(idx);
+        }
+        if (selectedLayers.length === 2) {
+          showLayerComparison(selectedLayers[0], selectedLayers[1]);
+        }
+        renderLayers(currentLayers);
+      } else {
+        selectedLayer = idx;
+        renderLayers(currentLayers);
+        const layer = currentLayers[idx];
 
-      try {
-        const res = await fetch(`/api/sequential-os/inspect/${layer.hash}`);
-        const info = await res.json();
+        try {
+          const res = await fetch(`/api/sequential-os/inspect/${layer.hash}`);
+          const info = await res.json();
 
-        const content = document.getElementById('content');
-        content.innerHTML = `
-          <h2 style="margin-bottom: 20px; color: #4ade80;">Layer Details</h2>
-          <div class="status-grid">
-            <div class="status-card">
-              <div class="status-label">Hash</div>
-              <div class="status-value" style="font-size: 14px; font-family: 'Courier New', monospace;">${layer.hash}</div>
+          const content = document.getElementById('content');
+          content.innerHTML = `
+            <h2 style="margin-bottom: 20px; color: #4ade80;">Layer Details</h2>
+            <div class="status-grid">
+              <div class="status-card">
+                <div class="status-label">Hash</div>
+                <div class="status-value" style="font-size: 14px; font-family: 'Courier New', monospace;">${layer.hash}</div>
+              </div>
+              <div class="status-card">
+                <div class="status-label">Short Hash</div>
+                <div class="status-value" style="font-size: 18px;">${layer.short}</div>
+              </div>
+              <div class="status-card">
+                <div class="status-label">Timestamp</div>
+                <div class="status-value" style="font-size: 16px;">${new Date(layer.time).toLocaleString()}</div>
+              </div>
+              <div class="status-card">
+                <div class="status-label">Size</div>
+                <div class="status-value">${(info.size / 1024).toFixed(2)} KB</div>
+              </div>
             </div>
-            <div class="status-card">
-              <div class="status-label">Short Hash</div>
-              <div class="status-value" style="font-size: 18px;">${layer.short}</div>
-            </div>
-            <div class="status-card">
-              <div class="status-label">Timestamp</div>
-              <div class="status-value" style="font-size: 16px;">${new Date(layer.timestamp).toLocaleString()}</div>
-            </div>
-            <div class="status-card">
-              <div class="status-label">Size</div>
-              <div class="status-value">${(info.size / 1024).toFixed(2)} KB</div>
-            </div>
-          </div>
-          ${info.files && info.files.length > 0 ? `
-            <div class="file-list">
-              <h3>Files in this Layer (${info.files.length})</h3>
-              ${info.files.map(f => `
-                <div class="file-item">
-                  <span>${f}</span>
-                </div>
-              `).join('')}
-            </div>
-          ` : '<div class="empty-state"><p>No files in this layer</p></div>'}
-        `;
-      } catch (error) {
-        console.error('Failed to inspect layer:', error);
+            ${info.files && info.files.length > 0 ? `
+              <div class="file-list">
+                <h3>Files in this Layer (${info.files.length})</h3>
+                ${info.files.map(f => `
+                  <div class="file-item">
+                    <span>${f}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : '<div class="empty-state"><p>No files in this layer</p></div>'}
+          `;
+        } catch (error) {
+          console.error('Failed to inspect layer:', error);
+        }
       }
     }
 
@@ -404,6 +716,119 @@
         `;
       } catch (error) {
         console.error('Failed to load tags:', error);
+      }
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function closeDiffModal() {
+      const modal = document.getElementById('diffModal');
+      modal.classList.remove('active');
+    }
+
+    function computeSimpleDiff(oldText, newText) {
+      const oldLines = oldText.split('\n');
+      const newLines = newText.split('\n');
+      const added = [];
+      const removed = [];
+      const maxLen = Math.max(oldLines.length, newLines.length);
+
+      for (let i = 0; i < maxLen; i++) {
+        const oldLine = oldLines[i];
+        const newLine = newLines[i];
+        if (oldLine !== newLine) {
+          if (oldLine !== undefined) removed.push({ line: oldLine, idx: i });
+          if (newLine !== undefined) added.push({ line: newLine, idx: i });
+        }
+      }
+
+      return { added, removed, oldLines, newLines };
+    }
+
+    async function showLayerComparison(idx1, idx2) {
+      const layer1 = currentLayers[idx1];
+      const layer2 = currentLayers[idx2];
+
+      addDebugLog('Loading layer comparison...', 'info');
+
+      try {
+        const [res1, res2] = await Promise.all([
+          fetch(`/api/sequential-os/inspect/${layer1.hash}`),
+          fetch(`/api/sequential-os/inspect/${layer2.hash}`)
+        ]);
+
+        const info1 = await res1.json();
+        const info2 = await res2.json();
+
+        const files1 = new Set(info1.files || []);
+        const files2 = new Set(info2.files || []);
+
+        const added = [...files2].filter(f => !files1.has(f));
+        const deleted = [...files1].filter(f => !files2.has(f));
+        const modified = [...files1].filter(f => files2.has(f));
+
+        document.getElementById('diffTitle').textContent = `Comparing ${layer1.short} → ${layer2.short}`;
+
+        let diffHtml = `
+          <div class="diff-summary">
+            <div class="diff-stat diff-stat-added">+ ${added.length} added</div>
+            <div class="diff-stat diff-stat-modified">~ ${modified.length} modified</div>
+            <div class="diff-stat diff-stat-deleted">- ${deleted.length} deleted</div>
+          </div>
+        `;
+
+        if (added.length > 0) {
+          diffHtml += `<div class="diff-file-header">Added Files (${added.length})</div>`;
+          added.forEach(file => {
+            diffHtml += `<div class="diff-line" style="color: #4ade80; padding: 4px 8px; background: rgba(74, 222, 128, 0.1); margin: 4px 0;">+ ${escapeHtml(file)}</div>`;
+          });
+        }
+
+        if (deleted.length > 0) {
+          diffHtml += `<div class="diff-file-header">Deleted Files (${deleted.length})</div>`;
+          deleted.forEach(file => {
+            diffHtml += `<div class="diff-line" style="color: #ff5f56; padding: 4px 8px; background: rgba(255, 95, 86, 0.1); margin: 4px 0;">- ${escapeHtml(file)}</div>`;
+          });
+        }
+
+        if (modified.length > 0) {
+          diffHtml += `<div class="diff-file-header">Modified Files (${modified.length})</div>`;
+          modified.slice(0, 10).forEach(file => {
+            diffHtml += `<div class="diff-line" style="color: #ffbd2e; padding: 4px 8px; background: rgba(255, 189, 46, 0.1); margin: 4px 0; cursor: pointer;" onclick="showFileDiffDetails('${escapeHtml(file)}', '${layer1.hash}', '${layer2.hash}')">~ ${escapeHtml(file)}</div>`;
+          });
+          if (modified.length > 10) {
+            diffHtml += `<div style="color: #999; padding: 8px; text-align: center;">... and ${modified.length - 10} more modified files</div>`;
+          }
+        }
+
+        document.getElementById('diffContent').innerHTML = diffHtml;
+        document.getElementById('diffModal').classList.add('active');
+        addDebugLog('Comparison loaded successfully', 'success');
+      } catch (error) {
+        addDebugLog(`Failed to compare layers: ${error.message}`, 'error');
+        console.error('Failed to compare layers:', error);
+      }
+    }
+
+    async function showFileDiffDetails(filePath, hash1, hash2) {
+      addDebugLog('Loading file diff...', 'info');
+      try {
+        const diffHtml = `<div style="text-align: center; padding: 40px; color: #999;">
+          <p>File diff details available via API inspection</p>
+          <p style="font-size: 11px; margin-top: 10px;">File: ${escapeHtml(filePath)}</p>
+        </div>`;
+        document.getElementById('diffContent').innerHTML = diffHtml;
+      } catch (error) {
+        addDebugLog(`Failed to load file diff: ${error.message}`, 'error');
       }
     }
 
