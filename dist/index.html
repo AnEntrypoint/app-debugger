@@ -426,6 +426,7 @@
       <button id="compareBtn" onclick="toggleCompareMode()">Compare Layers</button>
       <button onclick="refreshData()">Refresh</button>
       <button onclick="showTags()">Tags</button>
+      <button onclick="showCreateTagDialog()" style="background: #4ade80; color: #1a1a1a;">Create Tag</button>
     </div>
   </div>
   <div class="debugger-main">
@@ -719,6 +720,42 @@
       }
     }
 
+    async function showCreateTagDialog() {
+      const tagName = prompt('Enter tag name:');
+      if (!tagName || !tagName.trim()) return;
+
+      let refHash = null;
+      if (selectedLayer !== null && currentLayers[selectedLayer]) {
+        refHash = currentLayers[selectedLayer].hash;
+      } else if (currentLayers.length > 0) {
+        refHash = currentLayers[currentLayers.length - 1].hash;
+      }
+
+      if (!refHash) {
+        const manualRef = prompt('No layer selected. Enter hash manually (or cancel):');
+        if (!manualRef) return;
+        refHash = manualRef;
+      }
+
+      try {
+        addDebugLog(`Creating tag "${tagName.trim()}"...`, 'info');
+        const res = await fetch('/api/sequential-os/tag', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: tagName.trim(), ref: refHash })
+        });
+        const result = await res.json();
+        if (result.success) {
+          addDebugLog(`Tag "${tagName.trim()}" created for ${refHash.substring(0, 8)}`, 'success');
+          await showTags();
+        } else {
+          addDebugLog(`Failed to create tag: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addDebugLog(`Error creating tag: ${error.message}`, 'error');
+      }
+    }
+
     function escapeHtml(text) {
       const map = {
         '&': '&amp;',
@@ -822,14 +859,82 @@
     async function showFileDiffDetails(filePath, hash1, hash2) {
       addDebugLog('Loading file diff...', 'info');
       try {
-        const diffHtml = `<div style="text-align: center; padding: 40px; color: #999;">
-          <p>File diff details available via API inspection</p>
-          <p style="font-size: 11px; margin-top: 10px;">File: ${escapeHtml(filePath)}</p>
-        </div>`;
+        const res = await fetch('/api/sequential-os/diff', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file: filePath, hash1, hash2 })
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          document.getElementById('diffContent').innerHTML = `<div style="text-align: center; padding: 40px; color: #ff5f56;">
+            <p>Error loading diff: ${escapeHtml(data.error)}</p>
+          </div>`;
+          return;
+        }
+
+        const lines1 = data.content1.split('\n');
+        const lines2 = data.content2.split('\n');
+
+        const diff = computeDetailedDiff(lines1, lines2);
+
+        let diffHtml = `
+          <div class="diff-file-header">${escapeHtml(filePath)}</div>
+          <div class="diff-summary">
+            <div class="diff-stat diff-stat-added">+ ${diff.added.length} lines added</div>
+            <div class="diff-stat diff-stat-deleted">- ${diff.removed.length} lines removed</div>
+          </div>
+          <div class="diff-section">
+            <div class="diff-side">
+              <div class="diff-side-label">Before (${hash1.substring(0, 8)})</div>
+              <div class="diff-lines">
+                ${lines1.map((line, i) => {
+                  const isRemoved = diff.removed.some(r => r.idx === i);
+                  return `<div class="diff-line ${isRemoved ? 'diff-line-removed' : 'diff-line-unchanged'}">${i + 1}  ${escapeHtml(line)}</div>`;
+                }).join('')}
+              </div>
+            </div>
+            <div class="diff-side">
+              <div class="diff-side-label">After (${hash2.substring(0, 8)})</div>
+              <div class="diff-lines">
+                ${lines2.map((line, i) => {
+                  const isAdded = diff.added.some(a => a.idx === i);
+                  return `<div class="diff-line ${isAdded ? 'diff-line-added' : 'diff-line-unchanged'}">${i + 1}  ${escapeHtml(line)}</div>`;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+
         document.getElementById('diffContent').innerHTML = diffHtml;
+        addDebugLog('File diff loaded successfully', 'success');
       } catch (error) {
         addDebugLog(`Failed to load file diff: ${error.message}`, 'error');
+        document.getElementById('diffContent').innerHTML = `<div style="text-align: center; padding: 40px; color: #ff5f56;">
+          <p>Error: ${escapeHtml(error.message)}</p>
+        </div>`;
       }
+    }
+
+    function computeDetailedDiff(lines1, lines2) {
+      const added = [];
+      const removed = [];
+      const set1 = new Set(lines1);
+      const set2 = new Set(lines2);
+
+      lines1.forEach((line, idx) => {
+        if (!set2.has(line) || (lines2[idx] !== line)) {
+          removed.push({ line, idx });
+        }
+      });
+
+      lines2.forEach((line, idx) => {
+        if (!set1.has(line) || (lines1[idx] !== line)) {
+          added.push({ line, idx });
+        }
+      });
+
+      return { added, removed };
     }
 
     refreshData();
