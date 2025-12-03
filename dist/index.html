@@ -577,10 +577,10 @@ function createStorageManager(appId) {
 
       container.innerHTML = layers.map((layer, idx) => `
         <div class="layer-item ${selectedLayer === idx ? 'active' : ''} ${selectedLayers.includes(idx) ? 'selected-compare' : ''}" onclick="selectLayer(${idx})">
-          <div class="layer-hash">${layer.short}</div>
+          <div class="layer-hash">${escapeHtml(layer.short)}</div>
           <div class="layer-timestamp">${new Date(layer.time).toLocaleString()}</div>
           ${!comparisonMode ? `
-            <button class="layer-checkout-btn" onclick="event.stopPropagation(); checkoutLayer('${layer.hash}')">
+            <button class="layer-checkout-btn" onclick="event.stopPropagation(); checkoutLayer('${escapeHtml(layer.hash)}')">
               Checkout
             </button>
           ` : ''}
@@ -658,7 +658,7 @@ function createStorageManager(appId) {
             <h3>Added Files</h3>
             ${added.map(f => `
               <div class="file-item added">
-                <span>${f}</span>
+                <span>${escapeHtml(f)}</span>
                 <span class="file-badge added">Added</span>
               </div>
             `).join('')}
@@ -669,7 +669,7 @@ function createStorageManager(appId) {
             <h3>Modified Files</h3>
             ${modified.map(f => `
               <div class="file-item modified">
-                <span>${f}</span>
+                <span>${escapeHtml(f)}</span>
                 <span class="file-badge modified">Modified</span>
               </div>
             `).join('')}
@@ -680,7 +680,7 @@ function createStorageManager(appId) {
             <h3>Deleted Files</h3>
             ${deleted.map(f => `
               <div class="file-item deleted">
-                <span>${f}</span>
+                <span>${escapeHtml(f)}</span>
                 <span class="file-badge deleted">Deleted</span>
               </div>
             `).join('')}
@@ -716,11 +716,11 @@ function createStorageManager(appId) {
             <div class="status-grid">
               <div class="status-card">
                 <div class="status-label">Hash</div>
-                <div class="status-value" style="font-size: 14px; font-family: 'Courier New', monospace;">${layer.hash}</div>
+                <div class="status-value" style="font-size: 14px; font-family: 'Courier New', monospace;">${escapeHtml(layer.hash)}</div>
               </div>
               <div class="status-card">
                 <div class="status-label">Short Hash</div>
-                <div class="status-value" style="font-size: 18px;">${layer.short}</div>
+                <div class="status-value" style="font-size: 18px;">${escapeHtml(layer.short)}</div>
               </div>
               <div class="status-card">
                 <div class="status-label">Timestamp</div>
@@ -736,7 +736,7 @@ function createStorageManager(appId) {
                 <h3>Files in this Layer (${info.files.length})</h3>
                 ${info.files.map(f => `
                   <div class="file-item">
-                    <span>${f}</span>
+                    <span>${escapeHtml(f)}</span>
                   </div>
                 `).join('')}
               </div>
@@ -761,8 +761,8 @@ function createStorageManager(appId) {
             <div class="file-list">
               ${tagEntries.map(([name, ref]) => `
                 <div class="file-item">
-                  <span style="font-weight: bold; color: #4ade80;">${name}</span>
-                  <span style="font-family: 'Courier New', monospace; font-size: 12px; color: #64b5f6;">${ref}</span>
+                  <span style="font-weight: bold; color: #4ade80;">${escapeHtml(name)}</span>
+                  <span style="font-family: 'Courier New', monospace; font-size: 12px; color: #64b5f6;">${escapeHtml(ref)}</span>
                 </div>
               `).join('')}
             </div>
@@ -866,7 +866,7 @@ function createStorageManager(appId) {
         const deleted = [...files1].filter(f => !files2.has(f));
         const modified = [...files1].filter(f => files2.has(f));
 
-        document.getElementById('diffTitle').textContent = `Comparing ${layer1.short} → ${layer2.short}`;
+        document.getElementById('diffTitle').textContent = `Comparing ${escapeHtml(layer1.short)} → ${escapeHtml(layer2.short)}`;
 
         let diffHtml = `
           <div class="diff-summary">
@@ -893,7 +893,7 @@ function createStorageManager(appId) {
         if (modified.length > 0) {
           diffHtml += `<div class="diff-file-header">Modified Files (${modified.length})</div>`;
           modified.slice(0, 10).forEach(file => {
-            diffHtml += `<div class="diff-line" style="color: #ffbd2e; padding: 4px 8px; background: rgba(255, 189, 46, 0.1); margin: 4px 0; cursor: pointer;" onclick="showFileDiffDetails('${escapeHtml(file)}', '${layer1.hash}', '${layer2.hash}')">~ ${escapeHtml(file)}</div>`;
+            diffHtml += `<div class="diff-line" style="color: #ffbd2e; padding: 4px 8px; background: rgba(255, 189, 46, 0.1); margin: 4px 0; cursor: pointer;" onclick="showFileDiffDetails('${escapeHtml(file)}', '${escapeHtml(layer1.hash)}', '${escapeHtml(layer2.hash)}')">~ ${escapeHtml(file)}</div>`;
           });
           if (modified.length > 10) {
             diffHtml += `<div style="color: #999; padding: 8px; text-align: center;">... and ${modified.length - 10} more modified files</div>`;
@@ -992,6 +992,11 @@ function createStorageManager(appId) {
 
     refreshData();
     setInterval(refreshData, 5000);
+  </script>
+  <script src="/error-handler.js"></script>
+  <script>
+    const errorHandler = new ErrorHandler('app-debugger');
+    window.errorHandler = errorHandler;
   </script>
 </body>
 </html>
